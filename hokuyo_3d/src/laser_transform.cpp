@@ -1,7 +1,7 @@
 #include<tf2_ros/transform_broadcaster.h>
 #include<tf2/LinearMath/Quaternion.h>
 #include<ros/ros.h>
-#include<dynamixel_workbench_msgs/msg/DynamixelState.h>
+#include<dynamixel_workbench_msgs/DynamixelState.h>
 
 /* This node publishes the tf between the laser scan and the servo.  This is based on the angle published by the servo. */
 
