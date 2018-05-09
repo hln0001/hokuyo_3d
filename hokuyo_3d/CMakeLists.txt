@@ -34,11 +34,11 @@ target_link_libraries(motor_sweep ${catkin_LIBRARIES})
 #add_executable(motor_sweep2 src/motor_sweep2.cpp)
 #target_link_libraries(motor_sweep2 ${catkin_LIBRARIES})
 
-#add_executable(laser_transform src/laser_transform.cpp)
-#target_link_libraries(laser_transform ${catkin_LIBRARIES})
+add_executable(laser_transform_broadcaster src/laser_transform_broadcaster.cpp)
+target_link_libraries(laser_transform_broadcaster ${catkin_LIBRARIES})
 
-#add_executable(motor_sweep src/motor_sweep.cpp)
-#set_target_properties(motor_sweep ${catkin_LIBRARIES})
+#add_executable(node executable)
+#set_target_properties(node ${catkin_LIBRARIES})
 
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
