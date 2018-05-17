@@ -40,6 +40,10 @@ target_link_libraries(laser_transform_broadcaster ${catkin_LIBRARIES})
 add_executable(dynamixel_spin_test src/dynamixel_spin_test.cpp)
 target_link_libraries(dynamixel_spin_test ${catkin_LIBRARIES})
 
+add_executable(dynamixel_rotate_test src/dynamixel_rotate_test.cpp)
+target_link_libraries(dynamixel_rotate_test ${catkin_LIBRARIES})
+
+
 #add_executable(node executable)
 #set_target_properties(node ${catkin_LIBRARIES})
 

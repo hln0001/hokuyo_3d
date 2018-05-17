@@ -13,7 +13,7 @@
 // Control table address
 #define ADDR_MX_TORQUE_ENABLE           64                  // Control table address is different in Dynamixel model
 #define ADDR_MX_DRIVE_MODE              11
-#define ADDR_MX_GOAL_VELOCITY           104
+#define ADDR_MX_GOAL_POSITION           116
 #define ADDR_MX_PRESENT_POSITION        132
 
 // Protocol version
@@ -27,8 +27,10 @@
 
 #define TORQUE_ENABLE                   1                   // Value for enabling the torque
 #define TORQUE_DISABLE                  0                   // Value for disabling the torque
-#define VELOCITY_CTRL_MODE              1                   // Value to set drive mode to wheel mode
-
+#define POSITION_CTRL_MODE              3                   // Value to set drive mode to JOINT mode
+#define DXL_MINIMUM_POSITION_VALUE      0                   // Dynamixel will rotate between this value
+#define DXL_MAXIMUM_POSITION_VALUE      2048                // and this value (note that the Dynamixel would not move when the position value is out of movable range. Check e-manual about the range of the Dynamixel you use.)
+#define DXL_MOVING_STATUS_THRESHOLD     10                  // Dynamixel moving status threshold
 
 class Dynamixel {
 private:
@@ -70,8 +72,8 @@ int main(int argc, char **argv)
 
   int index = 0;
   int dxl_comm_result = COMM_TX_FAIL;             // Communication result
-  int dxl_goal_velocity = 50;
-
+  int dxl_goal_position[2] = {DXL_MINIMUM_POSITION_VALUE, DXL_MAXIMUM_POSITION_VALUE};         // Goal position
+  int pause_time = 1;
 
   uint8_t dxl_error = 0;                          // Dynamixel error
   uint16_t dxl_present_position = 0;              // Present position
@@ -104,7 +106,7 @@ int main(int argc, char **argv)
   }
 
   // Change Operating Mode
-  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_DRIVE_MODE, VELOCITY_CTRL_MODE, &dxl_error);
+  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_DRIVE_MODE, POSITION_CTRL_MODE, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS)
   {
     printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
@@ -115,19 +117,21 @@ int main(int argc, char **argv)
   }
   else
   {
-    printf("In velocity control mode! \n");
+    printf("In position control mode! \n");
   }
 
 
   while(1)
   {
-    // Write goal speed
-    dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, dxl_goal_velocity, &dxl_error);
+    // Write goal position
+    dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_POSITION, dxl_goal_position[index], &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS)
     {
       printf("%s\n", packetHandler->getRxPacketError(dxl_error));
     }
-    while(dxl_error == 0){
+
+    do
+    {
       // Read present position
       dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
       if (dxl_comm_result != COMM_SUCCESS)
@@ -139,14 +143,19 @@ int main(int argc, char **argv)
         printf("%s\n", packetHandler->getRxPacketError(dxl_error));
       }
 
-      if(dxl_present_position > 4096){
-        uint16_t rotation_number = floor(dxl_present_position/4096);
-        dxl_present_position -= (rotation_number*4096);
-      }
-
-      printf("[ID:%03d] PresPos:%03d\n", DXL_ID, dxl_present_position);
+      printf("[ID:%03d] GoalPos:%03d  PresPos:%03d\n", DXL_ID, dxl_goal_position[index], dxl_present_position);
       motor.positionPub(dxl_present_position);
+    }while((abs(dxl_goal_position[index] - dxl_present_position) > DXL_MOVING_STATUS_THRESHOLD));
+
+    // Change goal position
+    if (index == 0)
+    {
+      index = 1;
     }
-    
+    else
+    {
+      index = 0;
+    }
+    ros::Duration(pause_time).sleep();
   }
 }
