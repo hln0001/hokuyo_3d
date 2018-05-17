@@ -121,7 +121,7 @@ int main(int argc, char **argv)
   }
 
 
-  while(1)
+  while(ros::ok())
   {
     // Write goal position
     dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_POSITION, dxl_goal_position[index], &dxl_error);

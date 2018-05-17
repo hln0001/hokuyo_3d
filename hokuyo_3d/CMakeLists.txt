@@ -28,8 +28,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-#add_executable(motor_sweep src/motor_sweep.cpp)
-#target_link_libraries(motor_sweep ${catkin_LIBRARIES})
+add_executable(laserscan_to_pointcloud src/laserscan_to_pointcloud.cpp)
+target_link_libraries(laserscan_to_pointcloud ${catkin_LIBRARIES})
 
 #add_executable(motor_sweep_half src/motor_sweep_half.cpp)
 #target_link_libraries(motor_sweep_half ${catkin_LIBRARIES})

@@ -119,7 +119,7 @@ int main(int argc, char **argv)
   }
 
 
-  while(1)
+  while(ros::ok())
   {
     // Write goal speed
     dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, dxl_goal_velocity, &dxl_error);
@@ -147,6 +147,6 @@ int main(int argc, char **argv)
       printf("[ID:%03d] PresPos:%03d\n", DXL_ID, dxl_present_position);
       motor.positionPub(dxl_present_position);
     }
-    
+
   }
 }
