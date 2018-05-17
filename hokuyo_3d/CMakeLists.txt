@@ -13,29 +13,32 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf2
   urg_node
+  dynamixel_sdk
 )
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES hokuyo_3d
+  INCLUDE_DIRS include
+  LIBRARIES dynamixel_sdk
 #  CATKIN_DEPENDS roscpp rospy std_msgs tf2 urg_node
 #  DEPENDS system_lib
 )
 
 include_directories(
-  include
+  include/dynamixel_sdk
   ${catkin_INCLUDE_DIRS}
 )
 
+#add_executable(motor_sweep src/motor_sweep.cpp)
+#target_link_libraries(motor_sweep ${catkin_LIBRARIES})
 
-add_executable(motor_sweep src/motor_sweep.cpp)
-target_link_libraries(motor_sweep ${catkin_LIBRARIES})
-
-#add_executable(motor_sweep2 src/motor_sweep2.cpp)
-#target_link_libraries(motor_sweep2 ${catkin_LIBRARIES})
+#add_executable(motor_sweep_half src/motor_sweep_half.cpp)
+#target_link_libraries(motor_sweep_half ${catkin_LIBRARIES})
 
 add_executable(laser_transform_broadcaster src/laser_transform_broadcaster.cpp)
 target_link_libraries(laser_transform_broadcaster ${catkin_LIBRARIES})
+
+add_executable(dynamixel_spin_test src/dynamixel_spin_test.cpp)
+target_link_libraries(dynamixel_spin_test ${catkin_LIBRARIES})
 
 #add_executable(node executable)
 #set_target_properties(node ${catkin_LIBRARIES})
