@@ -1,0 +1,9 @@
+<launch>
+  <node
+  	name="dynamixel_spin_test"
+  	pkg="hokuyo_3d"
+  	type="dynamixel_spin_test"
+  	required="true"
+  	output="screen"
+  />
+</launch>

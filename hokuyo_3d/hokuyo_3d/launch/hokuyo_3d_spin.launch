@@ -1,0 +1,52 @@
+<launch>
+  <node
+    name="hokuyo_scan"
+    pkg="urg_node"
+    type="urg_node"
+  />
+  <param
+    name="_ip_address"
+    value="192.168.0.100"
+  />
+
+  <node
+  	name="dynamixel_spin_test"
+  	pkg="hokuyo_3d"
+  	type="dynamixel_spin_test"
+  	required="true"
+  	output="screen"
+  />
+
+  <node
+  	name="laser_transform_broadcaster"
+  	pkg="hokuyo_3d"
+  	type="laser_transform_broadcaster"
+  	required="true"
+  	output="screen"
+  />
+
+  <node
+  	name="laserscan_to_pointcloud"
+  	pkg="hokuyo_3d"
+  	type="laserscan_to_pointcloud"
+  	required="true"
+  	output="screen"
+  />
+
+  <node
+  	name="laserscan_ugv_filter"
+  	pkg="hokuyo_3d"
+  	type="laserscan_ugv_filter"
+  	required="true"
+  	output="screen"
+  />
+
+  <node
+  	name="pointcloud_assembler_client"
+  	pkg="hokuyo_3d"
+  	type="pointcloud_assembler_client"
+  	required="true"
+  	output="screen"
+  />
+
+</launch>
