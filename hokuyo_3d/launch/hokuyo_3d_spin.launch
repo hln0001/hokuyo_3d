@@ -3,10 +3,10 @@
     name="hokuyo_scan"
     pkg="urg_node"
     type="urg_node"
+    />
     <param
       name="_ip_address" value="192.168.0.100"
     />
-  />
     
   <node
   	name="dynamixel_spin_test"
