@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   ros::Subscriber sub_scan;  //subscriber for the scan
 
   sub_scan = node.subscribe<sensor_msgs::LaserScan>("/filtered_scan", 1, scanCallback);
-  pcl_from_scan = node.advertise<sensor_msgs::PointCloud2>("/points_from_scan", 1);
+  pcl_from_scan = node.advertise<sensor_msgs::PointCloud2>("points_from_scan", 1);
 
   while(ros::ok()){
     ros::spin();

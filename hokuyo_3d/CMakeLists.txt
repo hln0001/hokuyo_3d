@@ -31,9 +31,6 @@ include_directories(
 add_executable(laserscan_to_pointcloud src/laserscan_to_pointcloud.cpp)
 target_link_libraries(laserscan_to_pointcloud ${catkin_LIBRARIES})
 
-#add_executable(motor_sweep_half src/motor_sweep_half.cpp)
-#target_link_libraries(motor_sweep_half ${catkin_LIBRARIES})
-
 add_executable(laser_transform_broadcaster src/laser_transform_broadcaster.cpp)
 target_link_libraries(laser_transform_broadcaster ${catkin_LIBRARIES})
 
@@ -43,9 +40,11 @@ target_link_libraries(dynamixel_spin_test ${catkin_LIBRARIES})
 add_executable(dynamixel_rotate_test src/dynamixel_rotate_test.cpp)
 target_link_libraries(dynamixel_rotate_test ${catkin_LIBRARIES})
 
+add_executable(laserscan_ugv_filter src/laserscan_ugv_filter.cpp)
+target_link_libraries(laserscan_ugv_filter ${catkin_LIBRARIES})
 
-#add_executable(node executable)
-#set_target_properties(node ${catkin_LIBRARIES})
+add_executable(pointcloud_assembler_client src/pointcloud_assembler_client.cpp)
+target_link_libraries(pointcloud_assembler_client ${catkin_LIBRARIES})
 
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
