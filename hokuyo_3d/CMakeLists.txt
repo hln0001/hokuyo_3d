@@ -37,6 +37,9 @@ target_link_libraries(laser_transform_broadcaster ${catkin_LIBRARIES})
 add_executable(dynamixel_spin_test src/dynamixel_spin_test.cpp)
 target_link_libraries(dynamixel_spin_test ${catkin_LIBRARIES})
 
+add_executable(dynamixel_spin src/dynamixel_spin.cpp)
+target_link_libraries(dynamixel_spin ${catkin_LIBRARIES})
+
 add_executable(dynamixel_rotate_test src/dynamixel_rotate_test.cpp)
 target_link_libraries(dynamixel_rotate_test ${catkin_LIBRARIES})
 

@@ -90,8 +90,8 @@ int main(int argc, char **argv)
     printf("Succeeded to change the baudrate!\n");
   }
 
-  // Enable Dynamixel Torque
-  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+  // Disable Dynamixel Torque
+  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS)
   {
     printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     printf("Dynamixel has been successfully connected \n");
   }
 
-  // Change Operating Mode
+  // Change Operating Mode to Joint
   dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_DRIVE_MODE, POSITION_CTRL_MODE, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS)
   {
@@ -120,6 +120,20 @@ int main(int argc, char **argv)
     printf("In position control mode! \n");
   }
 
+  // Enable Dynamixel Torque
+  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+  if (dxl_comm_result != COMM_SUCCESS)
+  {
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+  }
+  else if (dxl_error != 0)
+  {
+    printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+  }
+  else
+  {
+    printf("Dynamixel has been successfully connected \n");
+  }
 
   while(ros::ok())
   {
