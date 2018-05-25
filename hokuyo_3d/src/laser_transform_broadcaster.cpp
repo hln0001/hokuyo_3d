@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     ros::NodeHandle node;
 
     //subscirber to current position
-    ros::Subscriber position_sub = node.subscribe("/dxl_pos", 5, &obtainValues);
+    ros::Subscriber position_sub = node.subscribe("dxl_pos", 5, &obtainValues);
 
     //wait for updates in position
     ros::spin();

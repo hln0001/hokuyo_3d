@@ -138,6 +138,8 @@ void Dynamixel::initialize(int index, uint8_t dxl_error, uint16_t dxl_present_po
 
 int main(int argc, char **argv)
 {
+	ros::init(argc, argv, "motor_sweep_half");
+
 	// Initialize PortHandler instance
 	// Set the port path
 	// Get methods and members of PortHandlerLinux
@@ -154,8 +156,6 @@ int main(int argc, char **argv)
 
 	uint8_t dxl_error = 0;                          // Dynamixel error
 	uint16_t dxl_present_position = 0;              // Present position
-
-	ros::init(argc, argv, "motor_sweep_half");
 
 	Dynamixel motor;
 

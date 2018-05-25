@@ -8,7 +8,7 @@ using namespace std;
 //define infinity
 float inf = numeric_limits<float>::infinity();
 
-float ugv_threshold = 0.5; //distance threshold for laserscan range
+float ugv_threshold = 0.3; //distance threshold for laserscan range
 
 //create a publisher
 ros::Publisher pub;
@@ -29,15 +29,15 @@ void filter(const sensor_msgs::LaserScan old_scan){
   //defines ranges array length to 920
   new_scan.ranges.resize(920);
 
-  //check each range for <0.5m and remove those that angle_increment
+  //check each range for <0.5m and remove those that aren't
   for(int i = 0; i < 921; i++){
-    if (new_scan.ranges[i] > 0.5){
+    // if (new_scan.ranges[i] > ugv_threshold){
       new_scan.ranges[i] = old_scan.ranges[i]; //transfer original range if valid
-    }
+    // }
 
-    else{
-      new_scan.ranges[i] = inf; //set to infinity if not valid
-    }
+    // else{
+      // new_scan.ranges[i] = inf; //set to infinity if not valid
+    // }
   }
 
   pub.publish(new_scan);
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "laserscan_ugv_filter", 1);
   ros::NodeHandle node;
 
-  ros::Subscriber sub = node.subscribe<sensor_msgs::LaserScan>("/scan", 1, filter);
+  ros::Subscriber sub = node.subscribe<sensor_msgs::LaserScan>("scan", 1, filter);
 
   pub = node.advertise<sensor_msgs::LaserScan>("filtered_scan", 1);
 
