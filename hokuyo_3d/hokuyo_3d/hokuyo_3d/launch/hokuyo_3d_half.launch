@@ -10,12 +10,12 @@
   />
 
   <node
-  	name="dynamixel_spin"
+  	name="dynamixel_rotate_test"
   	pkg="hokuyo_3d"
-  	type="dynamixel_spin"
+  	type="dynamixel_rotate_test"
   	required="true"
   	output="screen"
-  />
+    />
 
   <node
   	name="laser_transform_broadcaster"

@@ -1,13 +1,22 @@
 <launch>
+
+  <param
+    name="goal_speed"
+    type="int"
+    value="80"
+    />
+
   <node
     name="hokuyo_scan"
     pkg="urg_node"
     type="urg_node"
-  />
-  <param
-    name="_ip_address"
-    value="192.168.0.100"
-  />
+    output="screen"
+    >
+    <param
+      name="ip_address"
+      value="192.168.0.10"
+    />
+  </node>
 
   <node
   	name="dynamixel_spin"

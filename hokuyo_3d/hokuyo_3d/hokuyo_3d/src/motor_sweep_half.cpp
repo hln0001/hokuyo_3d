@@ -55,11 +55,11 @@ class Dynamixel {
 //Dynamixel class constructor creates publishers
 Dynamixel::Dynamixel() {
 	//create publisher for motor commands
-	pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
+	pub_pos = node.advertise<std_msgs::UInt16>("/dxl_pos", 10);
 
 	//create a publisher for publishing start and end times of sweeps
-	pub_ts = node.advertise<std_msgs::Time>("start_time", 1);
-	pub_te = node.advertise<std_msgs::Time>("end_time", 1);
+	pub_ts = node.advertise<std_msgs::Time>("/start_time", 1);
+	pub_te = node.advertise<std_msgs::Time>("/end_time", 1);
 };
 
 //Function for moving motor
@@ -138,8 +138,6 @@ void Dynamixel::initialize(int index, uint8_t dxl_error, uint16_t dxl_present_po
 
 int main(int argc, char **argv)
 {
-	ros::init(argc, argv, "motor_sweep_half");
-
 	// Initialize PortHandler instance
 	// Set the port path
 	// Get methods and members of PortHandlerLinux
@@ -156,6 +154,8 @@ int main(int argc, char **argv)
 
 	uint8_t dxl_error = 0;                          // Dynamixel error
 	uint16_t dxl_present_position = 0;              // Present position
+
+	ros::init(argc, argv, "motor_sweep_half");
 
 	Dynamixel motor;
 

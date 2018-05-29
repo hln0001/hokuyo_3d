@@ -10,21 +10,21 @@
 
 //Spins rotates the dynamixel back and forth 180 deg and publishes the raw position value (0-->2048)
 
-// Control table addresses
-#define ADDR_MX_TORQUE_ENABLE           64
+// Control table address
+#define ADDR_MX_TORQUE_ENABLE           64                  // Control table address is different in Dynamixel model
 #define ADDR_MX_DRIVE_MODE              11
 #define ADDR_MX_GOAL_POSITION           116
 #define ADDR_MX_PRESENT_POSITION        132
 
 // Protocol version
-#define PROTOCOL_VERSION                2.0
+#define PROTOCOL_VERSION                2.0                 // See which protocol version is used in the Dynamixel
 
-// Default settings
+// Default setting
 #define DXL_ID                          1                   // Dynamixel ID: 1
 #define BAUDRATE                        57600
-#define DEVICENAME                      "/dev/ttyUSB0"
+#define DEVICENAME                      "/dev/ttyUSB0"      // Check which port is being used on your controller
+                                                            // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
-// Default control table values
 #define TORQUE_ENABLE                   1                   // Value for enabling the torque
 #define TORQUE_DISABLE                  0                   // Value for disabling the torque
 #define POSITION_CTRL_MODE              3                   // Value to set drive mode to JOINT mode
@@ -32,7 +32,6 @@
 #define DXL_MAXIMUM_POSITION_VALUE      2048                // and this value (note that the Dynamixel would not move when the position value is out of movable range. Check e-manual about the range of the Dynamixel you use.)
 #define DXL_MOVING_STATUS_THRESHOLD     10                  // Dynamixel moving status threshold
 
-// Class for the node handle, publisher, constructor
 class Dynamixel {
 private:
   ros::NodeHandle node;
@@ -40,13 +39,15 @@ private:
 public:
   Dynamixel();
   void positionPub(uint16_t dxl_present_position);
+
 };
 
 //Dynamixel class constructor creates publishers
 Dynamixel::Dynamixel() {
-	//create publisher for position of servo
-  pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
+	//create publisher for motor commands
+  pub_pos = node.advertise<std_msgs::UInt16>("/dxl_pos", 10);
 };
+
 
 //Publishes raw position value to ROS
 void Dynamixel::positionPub(uint16_t dxl_present_position) {
@@ -59,21 +60,20 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "spin_test");
   Dynamixel motor;
-
   // Initialize PortHandler instance
   // Set the port path
-  // Get methods and members of PortHandlerLinux
+  // Get methods and members of PortHandlerLinux or PortHandlerWindows
   dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
 
   // Initialize PacketHandler instance
   // Set the protocol version
-  // Get methods and members of Protocol2PacketHandler
+  // Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
   dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
-  int index = 0;                                  // used for switching positions
-  int dxl_comm_result = COMM_TX_FAIL;             // Communication result declared
-  int dxl_goal_position[2] = {DXL_MINIMUM_POSITION_VALUE, DXL_MAXIMUM_POSITION_VALUE};         // Goal position array
-  int pause_time = 1;                             //pause in between position changes
+  int index = 0;
+  int dxl_comm_result = COMM_TX_FAIL;             // Communication result
+  int dxl_goal_position[2] = {DXL_MINIMUM_POSITION_VALUE, DXL_MAXIMUM_POSITION_VALUE};         // Goal position
+  int pause_time = 1;
 
   uint8_t dxl_error = 0;                          // Dynamixel error
   uint16_t dxl_present_position = 0;              // Present position
@@ -81,59 +81,45 @@ int main(int argc, char **argv)
   // Open port
   if (portHandler->openPort())
   {
-    // printf("Succeeded to open the port!\n");
+    printf("Succeeded to open the port!\n");
   }
 
   // Set port baudrate
   if (portHandler->setBaudRate(BAUDRATE))
   {
-    // printf("Succeeded to change the baudrate!\n");
-  }
-
-  // Disable Dynamixel Torque
-  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS)
-  {
-    // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-  }
-  else if (dxl_error != 0)
-  {
-    // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-  }
-  else
-  {
-    // printf("Dynamixel has been successfully connected \n");
-  }
-
-  // Change Operating Mode to Joint
-  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_DRIVE_MODE, POSITION_CTRL_MODE, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS)
-  {
-    // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-  }
-  else if (dxl_error != 0)
-  {
-    // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-  }
-  else
-  {
-    // printf("In position control mode! \n");
+    printf("Succeeded to change the baudrate!\n");
   }
 
   // Enable Dynamixel Torque
   dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS)
   {
-    // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
   }
   else if (dxl_error != 0)
   {
-    // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+    printf("%s\n", packetHandler->getRxPacketError(dxl_error));
   }
   else
   {
-    // printf("Dynamixel has been successfully connected \n");
+    printf("Dynamixel has been successfully connected \n");
   }
+
+  // Change Operating Mode
+  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_DRIVE_MODE, POSITION_CTRL_MODE, &dxl_error);
+  if (dxl_comm_result != COMM_SUCCESS)
+  {
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+  }
+  else if (dxl_error != 0)
+  {
+    printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+  }
+  else
+  {
+    printf("In position control mode! \n");
+  }
+
 
   while(ros::ok())
   {
@@ -141,7 +127,7 @@ int main(int argc, char **argv)
     dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_POSITION, dxl_goal_position[index], &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS)
     {
-      // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+      printf("%s\n", packetHandler->getRxPacketError(dxl_error));
     }
 
     do
@@ -150,14 +136,14 @@ int main(int argc, char **argv)
       dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
       if (dxl_comm_result != COMM_SUCCESS)
       {
-        // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+        printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
       }
       else if (dxl_error != 0)
       {
-        // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+        printf("%s\n", packetHandler->getRxPacketError(dxl_error));
       }
 
-      // printf("[ID:%03d] GoalPos:%03d  PresPos:%03d\n", DXL_ID, dxl_goal_position[index], dxl_present_position);
+      printf("[ID:%03d] GoalPos:%03d  PresPos:%03d\n", DXL_ID, dxl_goal_position[index], dxl_present_position);
       motor.positionPub(dxl_present_position);
     }while((abs(dxl_goal_position[index] - dxl_present_position) > DXL_MOVING_STATUS_THRESHOLD));
 

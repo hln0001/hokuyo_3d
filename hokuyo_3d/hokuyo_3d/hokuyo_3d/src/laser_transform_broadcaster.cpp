@@ -20,18 +20,18 @@ void obtainValues(const std_msgs::UInt16 &msg)
 
     //perform transform
     static tf2_ros::TransformBroadcaster br;
-    geometry_msgs::TransformStamped transformStamped;
+    geometry_msgs::TransformStamped tfStamped;
 
-    transformStamped.header.stamp = ros::Time::now();
-    transformStamped.header.frame_id = "servo";
-    transformStamped.child_frame_id = "laser";
+    tfStamped.header.stamp = ros::Time::now();
+    tfStamped.header.frame_id = "world";
+    tfStamped.child_frame_id = "tfscan";
     tf2::Quaternion q;
     q.setRPY(pos_rad, 0, 0);
-    transformStamped.transform.rotation.x = q.x();
-    transformStamped.transform.rotation.y = q.y();
-    transformStamped.transform.rotation.z = q.z();
-    transformStamped.transform.rotation.w = q.w();
-    br.sendTransform(transformStamped);
+    tfStamped.transform.rotation.x = q.x();
+    tfStamped.transform.rotation.y = q.y();
+    tfStamped.transform.rotation.z = q.z();
+    tfStamped.transform.rotation.w = q.w();
+    br.sendTransform(tfStamped);
 }
 
 //main
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     ros::NodeHandle node;
 
     //subscirber to current position
-    ros::Subscriber position_sub = node.subscribe("dxl_pos", 5, &obtainValues);
+    ros::Subscriber position_sub = node.subscribe("/dxl_pos", 5, &obtainValues);
 
     //wait for updates in position
     ros::spin();
