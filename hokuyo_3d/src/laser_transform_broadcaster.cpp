@@ -20,18 +20,18 @@ void obtainValues(const std_msgs::UInt16 &msg)
 
     //perform transform
     static tf2_ros::TransformBroadcaster br;
-    geometry_msgs::TransformStamped tfStamped;
+    geometry_msgs::TransformStamped transformStamped;
 
-    tfStamped.header.stamp = ros::Time::now();
-    tfStamped.header.frame_id = "world";
-    tfStamped.child_frame_id = "tfscan";
+    transformStamped.header.stamp = ros::Time::now();
+    transformStamped.header.frame_id = "servo";
+    transformStamped.child_frame_id = "laser";
     tf2::Quaternion q;
     q.setRPY(pos_rad, 0, 0);
-    tfStamped.transform.rotation.x = q.x();
-    tfStamped.transform.rotation.y = q.y();
-    tfStamped.transform.rotation.z = q.z();
-    tfStamped.transform.rotation.w = q.w();
-    br.sendTransform(tfStamped);
+    transformStamped.transform.rotation.x = q.x();
+    transformStamped.transform.rotation.y = q.y();
+    transformStamped.transform.rotation.z = q.z();
+    transformStamped.transform.rotation.w = q.w();
+    br.sendTransform(transformStamped);
 }
 
 //main

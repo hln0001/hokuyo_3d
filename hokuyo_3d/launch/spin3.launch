@@ -43,12 +43,14 @@
   />
 
   <node
-  	name="pointcloud_assembler_client"
-  	pkg="hokuyo_3d"
-  	type="pointcloud_assembler_client"
+  	type="laser_scan_assembler"
+  	pkg="laser_assembler"
+  	name="pointcloud_assembler"
   	required="true"
   	output="screen">
-    <param name="fixed_frame" type="string" value="base_link" />
+    <remap from ="scan" to="filtered_scan"/>
+    <param name="max_scans" type="int" value="400" />
+    <param name="fixed_frame" type="string" value="laser" />
   </node>
 
 </launch>

@@ -43,7 +43,7 @@ public:
 //Dynamixel class constructor creates publishers
 Dynamixel::Dynamixel() {
 	//create publisher for motor commands
-  pub_pos = node.advertise<std_msgs::UInt16>("/dxl_pos", 10);
+  pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
 };
 
 

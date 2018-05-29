@@ -45,7 +45,7 @@ public:
 //Dynamixel class constructor creates publishers
 Dynamixel::Dynamixel() {
 	//create publisher for position of servo
-  pub_pos = node.advertise<std_msgs::UInt16>("/dxl_pos", 10);
+  pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
 };
 
 //Publishes raw position value to ROS

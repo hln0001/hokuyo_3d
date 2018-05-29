@@ -55,11 +55,11 @@ class Dynamixel {
 //Dynamixel class constructor creates publishers
 Dynamixel::Dynamixel() {
 	//create publisher for motor commands
-	pub_pos = node.advertise<std_msgs::UInt16>("/dxl_pos", 10);
+	pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
 
 	//create a publisher for publishing start and end times of sweeps
-	pub_ts = node.advertise<std_msgs::Time>("/start_time", 1);
-	pub_te = node.advertise<std_msgs::Time>("/end_time", 1);
+	pub_ts = node.advertise<std_msgs::Time>("start_time", 1);
+	pub_te = node.advertise<std_msgs::Time>("end_time", 1);
 };
 
 //Function for moving motor

@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include <laser_assembler/AssembleScans.h>
+#include <laser_assembler/AssembleScans2.h>
 #include <sensor_msgs/PointCloud2.h>
 
 using namespace laser_assembler;
@@ -17,9 +17,9 @@ int main(int argc, char **argv)
   pub_cloud = node.advertise<sensor_msgs::PointCloud2>("assembled_cloud",1);
 
   //Call the assemble_scans service
-  ros::service::waitForService("assemble_scans");
-  ros::ServiceClient client = node.serviceClient<AssembleScans>("assemble_scans");
-  AssembleScans srv;
+  ros::service::waitForService("assemble_scans2");
+  ros::ServiceClient client = node.serviceClient<AssembleScans2>("assemble_scans2");
+  AssembleScans2 srv;
   srv.request.begin = ros::Time(0,0);
   srv.request.end = ros::Time::now();
 
