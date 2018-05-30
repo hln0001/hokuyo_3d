@@ -51,11 +51,19 @@
   />
 
   <node
-  	name="pointcloud_assembler_client"
-  	pkg="hokuyo_3d"
-  	type="pointcloud_assembler_client"
-  	required="true"
-  	output="screen"
-  />
+  	name="point_cloud2_assembler"
+  	pkg="laser_assembler"
+  	type="point_cloud2_assembler">
+    <remap from="cloud" to="points_from_scan"/>
+    <param name="max_clouds" type="int" value="400"/>
+    <param name="fixed_frame" type="string" value="servo"/>
+  </node>
 
+  <node
+    name="periodic_snapshotter"
+    pkg="hokuyo_3d"
+    type="periodic_snapshotter"
+    required="true"
+    output="screen"
+  />
 </launch>

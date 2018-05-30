@@ -49,6 +49,10 @@ target_link_libraries(laserscan_ugv_filter ${catkin_LIBRARIES})
 add_executable(pointcloud_assembler_client src/pointcloud_assembler_client.cpp)
 target_link_libraries(pointcloud_assembler_client ${catkin_LIBRARIES})
 
+add_executable(periodic_snapshotter src/periodic_snapshotter.cpp)
+target_link_libraries(periodic_snapshotter ${catkin_LIBRARIES})
+
+
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

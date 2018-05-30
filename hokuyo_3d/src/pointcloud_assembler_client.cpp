@@ -18,6 +18,8 @@ int main(int argc, char **argv)
 
   //Call the assemble_scans service
   ros::service::waitForService("assemble_scans2");
+  node.setParam("fixed_frame", "servo");
+  node.setParam("max_clouds", 400);
   ros::ServiceClient client = node.serviceClient<AssembleScans2>("assemble_scans2");
   AssembleScans2 srv;
   srv.request.begin = ros::Time(0,0);
