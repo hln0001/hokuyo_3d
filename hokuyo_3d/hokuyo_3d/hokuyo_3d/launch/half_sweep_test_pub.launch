@@ -1,9 +1,0 @@
-<launch>
-  <node
-  	name="dynamixel_rotate_test"
-  	pkg="hokuyo_3d"
-  	type="dynamixel_rotate_test"
-  	required="true"
-  	output="screen"
-  />
-</launch>

@@ -24,7 +24,7 @@ public:
   PeriodicSnapshotter()
   {
     // Create a publisher for the clouds that we assemble
-    pub_ = n_.advertise<sensor_msgs::PointCloud2> ("assembled_cloud", 1);
+    pub_ = n_.advertise<sensor_msgs::PointCloud2> ("velodyne_points", 1); //must be "velodyne_points" for blam_slam node
 
     // Create the service client for calling the assembler
     client_ = n_.serviceClient<AssembleScans2>("assemble_scans2");
