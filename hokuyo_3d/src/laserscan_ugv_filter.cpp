@@ -36,21 +36,22 @@ void filter(const sensor_msgs::LaserScan old_scan){
     }
 
     else{
-      new_scan.ranges[i] = inf; //set to infinity if not valid
+      new_scan.ranges[i] = inf; //set to infinity if within the ugv_threshold
     }
   }
 
-  pub.publish(new_scan);
+  pub.publish(new_scan);  //publish the filtered scan
 }
 
 int main(int argc, char **argv) {
+  //initialize ROS
   ros::init(argc, argv, "laserscan_ugv_filter", 1);
   ros::NodeHandle node;
 
   node.param("filter_threshold", ugv_threshold, 1.3); //accept param for ugv_threshold, default 1.3m
 
+  //create publisher and subscribers
   ros::Subscriber sub = node.subscribe<sensor_msgs::LaserScan>("scan", 1, filter);
-
   pub = node.advertise<sensor_msgs::LaserScan>("filtered_scan", 1);
 
   ros::spin();

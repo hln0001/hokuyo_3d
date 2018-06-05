@@ -34,7 +34,7 @@
 
 class Dynamixel {
 private:
-  ros::Publisher pub_pos; //position
+  ros::Publisher pub_pos;
 public:
   Dynamixel();
   void positionPub(uint16_t dxl_present_position);
@@ -69,14 +69,15 @@ int main(int argc, char **argv)
   // Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
   dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
+  //general variables
   int index = 0;
   int dxl_comm_result = COMM_TX_FAIL;             // Communication result
   int dxl_goal_velocity;
-  motor.node.param("goal_speed", dxl_goal_velocity, 50);
-
-
   uint8_t dxl_error = 0;                          // Dynamixel error
   uint16_t dxl_present_position = 0;              // Present position
+
+  //use rosparam to fetch the speed, otherwise default to 50
+  motor.node.param("goal_speed", dxl_goal_velocity, 50);
 
   // Open port
   if (portHandler->openPort())
@@ -137,7 +138,6 @@ int main(int argc, char **argv)
   }
 
   //Set position to 0
-  // Write goal position
   dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_POSITION, 0, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS)
   {

@@ -18,19 +18,24 @@ void obtainValues(const std_msgs::UInt16 &msg)
     pos = msg.data;
     double pos_rad = pos/4096*2*3.1416;
 
-    //perform transform
+    //create transform object
     static tf2_ros::TransformBroadcaster br;
     geometry_msgs::TransformStamped transformStamped;
 
+    //set transform information
     transformStamped.header.stamp = ros::Time::now();
     transformStamped.header.frame_id = "servo";
     transformStamped.child_frame_id = "laser";
     tf2::Quaternion q;
+
+    //perform transform
     q.setRPY(pos_rad, 0, 0);
     transformStamped.transform.rotation.x = q.x();
     transformStamped.transform.rotation.y = q.y();
     transformStamped.transform.rotation.z = q.z();
     transformStamped.transform.rotation.w = q.w();
+
+    //publish transform to the buffer
     br.sendTransform(transformStamped);
 }
 
