@@ -1,0 +1,17 @@
+<launch>
+
+  <param
+    name="goal_speed"
+    type="int"
+    value="50"
+    />
+
+  <node
+  	name="dynamixel_spin"
+  	pkg="hokuyo_3d"
+  	type="dynamixel_spin"
+  	required="true"
+  	output="screen"
+  />
+
+</launch>
