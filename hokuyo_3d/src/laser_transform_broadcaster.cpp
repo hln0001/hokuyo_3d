@@ -1,5 +1,7 @@
 #include<tf2_ros/transform_broadcaster.h>
+#include<tf2_ros/static_transform_broadcaster.h>
 #include<tf2/LinearMath/Quaternion.h>
+#include<tf2/LinearMath/Vector3.h>
 #include<ros/ros.h>
 #include<std_msgs/UInt16.h>
 #include<geometry_msgs/TransformStamped.h>
@@ -20,22 +22,45 @@ void obtainValues(const std_msgs::UInt16 &msg)
 
     //create transform object
     static tf2_ros::TransformBroadcaster br;
+    static tf2_ros::StaticTransformBroadcaster sbr;
     geometry_msgs::TransformStamped transformStamped;
+    geometry_msgs::TransformStamped staticTransformStamped;
 
-    //set transform information
+    //set transform between base_link and servo
+    staticTransformStamped.header.stamp = ros::Time::now();
+    staticTransformStamped.header.frame_id = "base_link";
+    staticTransformStamped.child_frame_id = "servo";
+    tf2::tf2Vector4 v;
+    tf2::Quaternion sq;
+
+    //set transform between servo and laser
     transformStamped.header.stamp = ros::Time::now();
     transformStamped.header.frame_id = "servo";
     transformStamped.child_frame_id = "laser";
     tf2::Quaternion q;
 
-    //perform transform
-    q.setRPY(pos_rad, 0, 0);
+
+    //perform transforms
+    q.setRPY(0, 3*3.1416/2, pos_rad);
     transformStamped.transform.rotation.x = q.x();
     transformStamped.transform.rotation.y = q.y();
     transformStamped.transform.rotation.z = q.z();
     transformStamped.transform.rotation.w = q.w();
 
+    sq.setRPY(0,0,0);
+    v.setValue(0.323, 0, 0.665, 0);
+    staticTransformStamped.transform.translation.x = v.x();
+    staticTransformStamped.transform.translation.y = v.y();
+    staticTransformStamped.transform.translation.z = v.z();
+    //transformStamped.transform.translation.w = v.w();
+    staticTransformStamped.transform.rotation.x = sq.x();
+    staticTransformStamped.transform.rotation.y = sq.y();
+    staticTransformStamped.transform.rotation.z = sq.z();
+    staticTransformStamped.transform.rotation.w = sq.w();
+
+
     //publish transform to the buffer
+    sbr.sendTransform(staticTransformStamped);
     br.sendTransform(transformStamped);
 }
 

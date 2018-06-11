@@ -33,6 +33,7 @@ void filter(const sensor_msgs::LaserScan old_scan){
   for(int i = 0; i < 921; i++){
     if (old_scan.ranges[i] > ugv_threshold){
       new_scan.ranges[i] = old_scan.ranges[i]; //transfer original range if valid
+      // new_scan.intensities[i] = old_scan.intensities[i]; //also transfer intensity data
     }
 
     else{

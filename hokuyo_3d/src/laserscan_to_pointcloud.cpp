@@ -20,9 +20,9 @@ void scanCallback (const sensor_msgs::LaserScan::ConstPtr& scan_in)
   //create PointCloud2 "container"
   sensor_msgs::PointCloud2 cloud;
 
-  if(tfBuffer.canTransform("laser", "servo", ros::Time::now(), ros::Duration(1))){ //check if transform is available
+  if(tfBuffer.canTransform("servo", "laser", ros::Time::now(), ros::Duration(1))){ //check if transform is available
     projector.transformLaserScanToPointCloud("servo", *scan_in, cloud, tfBuffer);  //project scan onto transform frame
-    // cloud.header.frame_id = "servo";  //not sure if this line is necessary but it works without it, so...
+     // cloud.header.frame_id = "servo";  //not sure if this line is necessary but it works without it, so...
     cloud.header.stamp = scan_in->header.stamp;  //set stamp from laserscan stamp
 
     //Publish pointcloud
