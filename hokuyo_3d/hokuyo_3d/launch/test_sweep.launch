@@ -1,9 +1,0 @@
-<launch>
-  <node
-  	name="motor_sweep_half"
-  	pkg="hokuyo_3d"
-  	type="motor_sweep_half"
-  	required="true"
-  	output="screen"
-  />
-</launch>

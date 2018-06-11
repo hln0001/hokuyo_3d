@@ -34,11 +34,11 @@ target_link_libraries(laserscan_to_pointcloud ${catkin_LIBRARIES})
 add_executable(laser_transform_broadcaster src/laser_transform_broadcaster.cpp)
 target_link_libraries(laser_transform_broadcaster ${catkin_LIBRARIES})
 
-add_executable(dynamixel_spin_test src/dynamixel_spin_test.cpp)
-target_link_libraries(dynamixel_spin_test ${catkin_LIBRARIES})
+#add_executable(dynamixel_spin_test src/dynamixel_spin_test.cpp)
+#target_link_libraries(dynamixel_spin_test ${catkin_LIBRARIES})
 
-add_executable(dynamixel_spin src/dynamixel_spin.cpp)
-target_link_libraries(dynamixel_spin ${catkin_LIBRARIES})
+add_executable(dynamixel_spin_continuous src/dynamixel_spin_continuous.cpp)
+target_link_libraries(dynamixel_spin_continuous ${catkin_LIBRARIES})
 
 add_executable(dynamixel_rotate_test src/dynamixel_rotate_test.cpp)
 target_link_libraries(dynamixel_rotate_test ${catkin_LIBRARIES})
@@ -52,6 +52,11 @@ target_link_libraries(pointcloud_assembler_client ${catkin_LIBRARIES})
 add_executable(periodic_snapshotter src/periodic_snapshotter.cpp)
 target_link_libraries(periodic_snapshotter ${catkin_LIBRARIES})
 
+add_executable(revolution_snapshotter src/revolution_snapshotter.cpp)
+target_link_libraries(revolution_snapshotter ${catkin_LIBRARIES})
+
+add_executable(dynamixel_spin_oscillation src/dynamixel_spin_oscillation.cpp)
+target_link_libraries(dynamixel_spin_oscillation ${catkin_LIBRARIES})
 
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

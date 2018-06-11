@@ -81,7 +81,7 @@ private:
   ros::ServiceClient client_;
   ros::Timer timer_;
   // bool first_time_;
-  int pubNum;
+  uint16_t pubNum;
 
 };
 

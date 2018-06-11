@@ -22,7 +22,7 @@
 // Default settings
 #define DXL_ID                          1                   // Dynamixel ID: 1
 #define BAUDRATE                        57600
-#define DEVICENAME                      "/dev/ttyUSB0"      // Check which port is being used on your controller
+#define DEVICENAME                      "/dev/ttyUSB1"      // Check which port is being used on your controller
                                                             // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 // Packet values for control
 #define TORQUE_ENABLE                   1                   // Value for enabling the torque
@@ -32,25 +32,28 @@
 
 class Dynamixel {
 private:
-  ros::NodeHandle node;
   ros::Publisher pub_pos; //position
+  ros::Publisher pub_rot; //rotation
 public:
   Dynamixel();
-  void positionPub(uint16_t dxl_present_position);
-
+  ros::NodeHandle node;
+  void positionPub(uint16_t dxl_present_position, uint16_t rotation_number);
 };
 
 //Dynamixel class constructor creates publishers
 Dynamixel::Dynamixel() {
 	//create publisher for motor commands
   pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
+  pub_rot = node.advertise<std_msgs::UInt16>("rotation_number", 10);
 };
 
 
 //Publishes raw position value to ROS
-void Dynamixel::positionPub(uint16_t dxl_present_position) {
+void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_number) {
   std_msgs::UInt16 msg;
+  std_msgs::UInt16 rotmsg;
 	msg.data = dxl_present_position;
+  rotmsg.data = rotation_number;
 	pub_pos.publish(msg);
 }
 
@@ -70,11 +73,13 @@ int main(int argc, char **argv)
 
   int index = 0;
   int dxl_comm_result = COMM_TX_FAIL;             // Communication result
-  int dxl_goal_velocity = 50;
+  int dxl_goal_velocity;
+  motor.node.param("goal_speed", dxl_goal_velocity, 50);
 
 
   uint8_t dxl_error = 0;                          // Dynamixel error
   uint16_t dxl_present_position = 0;              // Present position
+  uint16_t rotation_number;
 
   // Open port
   if (portHandler->openPort())
@@ -134,34 +139,26 @@ int main(int argc, char **argv)
   }
 
 
-  while(ros::ok())
+  while(ros::ok() && dxl_error==0)
   {
     // Write goal speed
     dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, dxl_goal_velocity, &dxl_error);
-    if (dxl_comm_result != COMM_SUCCESS)
+
+    // Read present position
+    dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
+
+    if(dxl_present_position > 4096)
     {
-      // // // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-    }
-    while(dxl_error == 0){
-      // Read present position
-      dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
-      if (dxl_comm_result != COMM_SUCCESS)
-      {
-        // // // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-      }
-      else if (dxl_error != 0)
-      {
-        // // // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-      }
-
-      if(dxl_present_position > 4096){
-        uint16_t rotation_number = floor(dxl_present_position/4096);
-        dxl_present_position -= (rotation_number*4096);
-      }
-
-      // // // printf("[ID:%03d] PresPos:%03d\n", DXL_ID, dxl_present_position);
-      motor.positionPub(dxl_present_position);
+      rotation_number = floor(dxl_present_position/4096);
+      dxl_present_position -= (rotation_number*4096);
     }
 
+    motor.positionPub(dxl_present_position, rotation_number);
+
+    if(!ros::ok())
+    {
+      dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, 0, &dxl_error);
+      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
+    }
   }
 }
