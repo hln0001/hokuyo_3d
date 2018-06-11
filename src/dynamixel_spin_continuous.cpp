@@ -49,12 +49,13 @@ Dynamixel::Dynamixel() {
 
 
 //Publishes raw position value to ROS
-void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_number) {
+void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_count) {
   std_msgs::UInt16 msg;
   std_msgs::UInt16 rotmsg;
 	msg.data = dxl_present_position;
-  rotmsg.data = rotation_number;
+  rotmsg.data = rotation_count;
 	pub_pos.publish(msg);
+  pub_rot.publish(rotmsg);
 }
 
 int main(int argc, char **argv)
@@ -80,6 +81,8 @@ int main(int argc, char **argv)
   uint8_t dxl_error = 0;                          // Dynamixel error
   uint16_t dxl_present_position = 0;              // Present position
   uint16_t rotation_number;
+  uint16_t rollover;
+  uint16_t rotation_count;
 
   // Open port
   if (portHandler->openPort())
@@ -151,9 +154,15 @@ int main(int argc, char **argv)
     {
       rotation_number = floor(dxl_present_position/4096);
       dxl_present_position -= (rotation_number*4096);
+      rotation_count = 15*rollover + rotation_number;
     }
 
-    motor.positionPub(dxl_present_position, rotation_number);
+    motor.positionPub(dxl_present_position, rotation_count);
+
+    if(rotation_number == 15)
+    {
+      rollover++;
+    }
 
     if(!ros::ok())
     {
