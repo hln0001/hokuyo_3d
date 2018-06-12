@@ -34,14 +34,8 @@ target_link_libraries(laserscan_to_pointcloud ${catkin_LIBRARIES})
 add_executable(laser_transform_broadcaster src/laser_transform_broadcaster.cpp)
 target_link_libraries(laser_transform_broadcaster ${catkin_LIBRARIES})
 
-#add_executable(dynamixel_spin_test src/dynamixel_spin_test.cpp)
-#target_link_libraries(dynamixel_spin_test ${catkin_LIBRARIES})
-
 add_executable(dynamixel_spin_continuous src/dynamixel_spin_continuous.cpp)
 target_link_libraries(dynamixel_spin_continuous ${catkin_LIBRARIES})
-
-add_executable(dynamixel_rotate_test src/dynamixel_rotate_test.cpp)
-target_link_libraries(dynamixel_rotate_test ${catkin_LIBRARIES})
 
 add_executable(laserscan_ugv_filter src/laserscan_ugv_filter.cpp)
 target_link_libraries(laserscan_ugv_filter ${catkin_LIBRARIES})

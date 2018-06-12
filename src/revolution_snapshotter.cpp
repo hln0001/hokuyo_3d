@@ -1,4 +1,3 @@
-// #include <cstdio>
 #include <ros/ros.h>
 
 // Services
@@ -33,32 +32,23 @@ public:
     // Create the service client for calling the assembler
     client_ = n_.serviceClient<AssembleScans2>("assemble_scans2");
 
+    last_time = ros::Time(0,0);
+
     // Start the timer that will trigger the processing loop (timerCallback)
-    timer_ = n_.createTimer(ros::Duration(2.5,0), &PeriodicSnapshotter::timerCallback, this); //change this line to change frequency
-//                                        ^this value
-    // Need to track if we've called the timerCallback at least once
-    // first_time_ = true;
+    PeriodicSnapshotter::timerCallback();
+
     pubNum = 0;
   }
 
-  void timerCallback(const ros::TimerEvent& e)
+  void timerCallback()
   {
 
-    // We don't want to build a cloud the first callback, since we we
-    //   don't have a start and end time yet
-    /*
-    if (first_time_)
-    {
-      first_time_ = false;
-      return;
-    }
-    */
     if(rotNum != pubNum)
     {
       // Populate our service request based on our timer callback times
       AssembleScans2 srv;
-      srv.request.begin = e.last_real;
-      srv.request.end   = e.current_real;
+      srv.request.begin = last_time;
+      srv.request.end   = ros::Time::now();
 
       // Make the service call
       if (client_.call(srv))
@@ -66,6 +56,8 @@ public:
         // ROS_INFO("Published Cloud with %u points", (uint32_t)(srv.response.cloud.points.size())) ;
         pub_.publish(srv.response.cloud);
         pubNum++;
+        last_time = ros::Time::now();
+
       }
       else
       {
@@ -79,12 +71,11 @@ private:
   ros::Publisher pub_;
   ros::Subscriber sub_;
   ros::ServiceClient client_;
+  ros::Time last_time;
   ros::Timer timer_;
-  // bool first_time_;
   uint16_t pubNum;
 
 };
-
 }
 
 using namespace laser_assembler ;
@@ -93,9 +84,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "periodic_snapshotter");
   ros::NodeHandle n;
-  // ROS_INFO("Waiting for [build_cloud] to be advertised");
   ros::service::waitForService("build_cloud");
-  // ROS_INFO("Found build_cloud! Starting the snapshotter");
   PeriodicSnapshotter snapshotter;
   ros::spin();
   return 0;

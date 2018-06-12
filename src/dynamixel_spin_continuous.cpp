@@ -23,7 +23,7 @@
 #define DXL_ID                          1                   // Dynamixel ID: 1
 #define BAUDRATE                        57600
 #define DEVICENAME                      "/dev/ttyUSB1"      // Check which port is being used on your controller
-                                                            // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+															// ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 // Packet values for control
 #define TORQUE_ENABLE                   1                   // Value for enabling the torque
 #define TORQUE_DISABLE                  0                   // Value for disabling the torque
@@ -37,7 +37,7 @@ private:
 public:
   Dynamixel();
   ros::NodeHandle node;
-  void positionPub(uint16_t dxl_present_position, uint16_t rotation_number);
+  void positionPub(uint16_t dxl_present_position, uint16_t rotation_count);
 };
 
 //Dynamixel class constructor creates publishers
@@ -52,9 +52,9 @@ Dynamixel::Dynamixel() {
 void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_count) {
   std_msgs::UInt16 msg;
   std_msgs::UInt16 rotmsg;
-	msg.data = dxl_present_position;
+  msg.data = dxl_present_position;
   rotmsg.data = rotation_count;
-	pub_pos.publish(msg);
+  pub_pos.publish(msg);
   pub_rot.publish(rotmsg);
 }
 
@@ -62,112 +62,63 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "spin_test");
   Dynamixel motor;
-  // Initialize PortHandler instance
-  // Set the port path
-  // Get methods and members of PortHandlerLinux or PortHandlerWindows
+
   dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
 
-  // Initialize PacketHandler instance
-  // Set the protocol version
-  // Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
   dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
   int index = 0;
-  int dxl_comm_result = COMM_TX_FAIL;             // Communication result
   int dxl_goal_velocity;
   motor.node.param("goal_speed", dxl_goal_velocity, 50);
 
 
-  uint8_t dxl_error = 0;                          // Dynamixel error
-  uint16_t dxl_present_position = 0;              // Present position
-  uint16_t rotation_number;
-  uint16_t rollover;
-  uint16_t rotation_count;
+  uint8_t dxl_error;                          // Dynamixel error
+  uint16_t dxl_present_position;              // Present position
+  uint16_t rotation_number;                   // Rotation number 0-15
+  uint16_t rollover;                          // Number of times rotation number has rolled over 15-->0
+  uint16_t rotation_count;                    // Adjusted rotation count, accounting for rollover
 
   // Open port
-  if (portHandler->openPort())
-  {
-    // // // printf("Succeeded to open the port!\n");
-  }
+  portHandler->openPort();
 
   // Set port baudrate
-  if (portHandler->setBaudRate(BAUDRATE))
-  {
-    // // // printf("Succeeded to change the baudrate!\n");
-  }
+  portHandler->setBaudRate(BAUDRATE);
 
   // Disable Dynamixel Torque
-  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS)
-  {
-    // // // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-  }
-  else if (dxl_error != 0)
-  {
-    // // // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-  }
-  else
-  {
-    // // // printf("Dynamixel has been successfully connected \n");
-  }
+  packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
 
   // Change Operating Mode
-  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_DRIVE_MODE, VELOCITY_CTRL_MODE, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS)
-  {
-    // // // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-  }
-  else if (dxl_error != 0)
-  {
-    // // // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-  }
-  else
-  {
-    // // // printf("In velocity control mode! \n");
-  }
+  packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_DRIVE_MODE, VELOCITY_CTRL_MODE, &dxl_error);
 
   // Enable Dynamixel Torque
-  dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
-  if (dxl_comm_result != COMM_SUCCESS)
-  {
-    // // // printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-  }
-  else if (dxl_error != 0)
-  {
-    // // // printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-  }
-  else
-  {
-    // // // printf("Dynamixel has been successfully connected \n");
-  }
-
+  packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
 
   while(ros::ok() && dxl_error==0)
   {
-    // Write goal speed
-    dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, dxl_goal_velocity, &dxl_error);
+	// Write goal speed
+	packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, dxl_goal_velocity, &dxl_error);
 
-    // Read present position
-    dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
+	// Read present position
+	packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
 
-    if(dxl_present_position > 4096)
-    {
-      rotation_number = floor(dxl_present_position/4096);
-      dxl_present_position -= (rotation_number*4096);
-      rotation_count = 15*rollover + rotation_number;
-    }
+	if(dxl_present_position > 4096)
+	{
+	  rotation_number = floor(dxl_present_position/4096);
+	  dxl_present_position -= (rotation_number*4096);
+	  rotation_count = 15*rollover + rotation_number;
+	}
 
-    motor.positionPub(dxl_present_position, rotation_count);
+	motor.positionPub(dxl_present_position, rotation_count);
 
-    if(rotation_number == 15)
-    {
-      rollover++;
-    }
+	if(rotation_number == 15)
+	{
+	  rollover++;
+	}
 
-    if(!ros::ok())
-    {
-      dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, 0, &dxl_error);
-      dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
-    }
+	if(!ros::ok())
+	{
+	  packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, 0, &dxl_error);
+	  packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
+	}
   }
 }
