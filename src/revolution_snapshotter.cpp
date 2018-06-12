@@ -7,9 +7,9 @@
 #include "sensor_msgs/PointCloud2.h"
 #include "std_msgs/UInt16.h"
 
-int rotNum;
+uint16_t rotNum;
 
-void rotNumCallback(std_msgs::UInt16 &msg)
+void rotNumCallback(const std_msgs::UInt16 msg)
 {
   rotNum = msg.data;
 }  
