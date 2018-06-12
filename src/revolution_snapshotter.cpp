@@ -9,9 +9,9 @@
 
 int rotNum;
 
-void rotNumCallback(std_msgs::UInt16 rotation_number)
+void rotNumCallback(std_msgs::UInt16 &msg)
 {
-  rotNum = rotation_number.data;  
+  rotNum = msg.data;
 }  
 
 namespace laser_assembler
@@ -21,9 +21,6 @@ class PeriodicSnapshotter
 {
 
 public:
-  ros::NodeHandle n_;
-  ros::Publisher pub_;
-  ros::Subscriber sub_;
 
   PeriodicSnapshotter()
   {
@@ -61,9 +58,11 @@ public:
    }
 
 private:
+  ros::NodeHandle n_;
+  ros::Publisher pub_;
+  ros::Subscriber sub_;
   ros::ServiceClient client_;
   ros::Time last_time;
-  ros::Timer timer_;
   uint16_t pubNum;
 
 };
