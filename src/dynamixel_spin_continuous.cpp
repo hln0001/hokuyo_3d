@@ -41,15 +41,17 @@ public:
 };
 
 //Dynamixel class constructor creates publishers
-Dynamixel::Dynamixel() {
+Dynamixel::Dynamixel()
+{
 	//create publisher for motor commands
   pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
-  pub_rot = node.advertise<std_msgs::UInt16>("rotation_number", 10);
+  pub_rot = node.advertise<std_msgs::UInt16>("rotation_count", 10);
 };
 
 
 //Publishes raw position value to ROS
-void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_count) {
+void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_count)
+{
   std_msgs::UInt16 msg;
   std_msgs::UInt16 rotmsg;
   msg.data = dxl_present_position;
@@ -75,8 +77,8 @@ int main(int argc, char **argv)
   uint8_t dxl_error;                          // Dynamixel error
   uint16_t dxl_present_position;              // Present position
   uint16_t rotation_number;                   // Rotation number 0-15
-  uint16_t rollover;                          // Number of times rotation number has rolled over 15-->0
-  uint16_t rotation_count;                    // Adjusted rotation count, accounting for rollover
+  uint16_t last_rotation;                     // Adjusted rotation count, accounting for rollover
+  uint16_t rotation_count;                    // overall count
 
   // Open port
   portHandler->openPort();
@@ -104,16 +106,16 @@ int main(int argc, char **argv)
 	if(dxl_present_position > 4096)
 	{
 	  rotation_number = floor(dxl_present_position/4096);
+	  if (last_rotation != rotation_number)
+	  {
+	      rotation_count++;
+	      last_rotation = rotation_number;
+	  }
 	  dxl_present_position -= (rotation_number*4096);
-	  rotation_count = 15*rollover + rotation_number;
 	}
 
 	motor.positionPub(dxl_present_position, rotation_count);
 
-	if(rotation_number == 15)
-	{
-	  rollover++;
-	}
 
 	if(!ros::ok())
 	{
