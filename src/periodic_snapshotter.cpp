@@ -24,7 +24,7 @@ public:
     client_ = n_.serviceClient<AssembleScans2>("assemble_scans2");
 
     // Start the timer that will trigger the processing loop (timerCallback)
-    timer_ = n_.createTimer(ros::Duration(2.5,0), &PeriodicSnapshotter::timerCallback, this); //change this line to change frequency
+    timer_ = n_.createTimer(ros::Duration(1,0), &PeriodicSnapshotter::timerCallback, this); //change this line to change frequency
 //                                        ^this value
     // Need to track if we've called the timerCallback at least once
     first_time_ = true;

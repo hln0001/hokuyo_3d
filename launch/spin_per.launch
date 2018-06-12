@@ -1,0 +1,76 @@
+<launch>
+
+  <param
+    name="goal_speed"
+    type="int"
+    value="350"
+    />
+
+  <node
+    name="hokuyo_scan"
+    pkg="urg_node"
+    type="urg_node"
+    output="screen"
+    >
+    <param
+      name="ip_address"
+      value="192.168.0.10"
+    />
+  </node>
+
+  <node
+  	name="dynamixel_spin_continuous"
+  	pkg="hokuyo_3d"
+  	type="dynamixel_spin_continuous"
+  	required="true"
+  	output="screen"
+  />
+
+  <node
+  	name="laser_transform_broadcaster"
+  	pkg="hokuyo_3d"
+  	type="laser_transform_broadcaster"
+  	required="true"
+  	output="screen"
+  />
+
+  <node
+  	name="laserscan_to_pointcloud"
+  	pkg="hokuyo_3d"
+  	type="laserscan_to_pointcloud"
+  	required="true"
+  	output="screen"
+  />
+
+  <node
+    name="laserscan_ugv_filter"
+    pkg="hokuyo_3d"
+    type="laserscan_ugv_filter"
+    required="true"
+    output="screen"
+    >
+    <param
+      name="filter_threshold"
+      value="0.665"
+    />
+  </node>
+
+  <node
+  	name="point_cloud2_assembler"
+  	pkg="laser_assembler"
+  	type="point_cloud2_assembler">
+    <remap from="cloud" to="points_from_scan"/>
+<!--    <remap from="assembled_cloud" to="velodyne_points"/> -->
+    <param name="max_clouds" type="int" value="400"/>
+    <param name="fixed_frame" type="string" value="servo"/>
+  </node>
+
+  <node
+    name="periodic_snapshotter"
+    pkg="hokuyo_3d"
+    type="periodic_snapshotter"
+    required="true"
+    output="screen"
+  />
+
+</launch>
