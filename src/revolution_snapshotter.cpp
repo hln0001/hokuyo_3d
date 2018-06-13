@@ -6,13 +6,20 @@
 // Messages
 #include "sensor_msgs/PointCloud2.h"
 #include "std_msgs/UInt16.h"
+#include "std_msgs/Time.h"
 
-uint16_t rotNum;
+ros::Time start_time;
+ros::Time end_time;
 
-void rotNumCallback(const std_msgs::UInt16 msg)
+void startCallback(const std_msgs::Time &msg)
 {
-  rotNum = msg.data;
-}  
+  start_time = msg.data;
+}
+
+void endCallback(const std_msgs::Time &msg)
+{
+  end_time = msg.data;
+}
 
 namespace laser_assembler
 {
@@ -22,50 +29,27 @@ class PeriodicSnapshotter
 
 public:
 
+  //subscribers, nodehandle, client, time objects
+  ros::NodeHandle n;
+  ros::Publisher pub;
+  ros::ServiceClient client;
+
   PeriodicSnapshotter()
   {
     // Create a publisher for the clouds that we assemble
-    pub_ = n_.advertise<sensor_msgs::PointCloud2> ("velodyne_points", 1); //must be "velodyne_points" for blam_slam node
-    sub_ = n_.subscribe<std_msgs::UInt16>("rotation_count", 1, rotNumCallback);
-
-    serviceTimer();
+    pub = n.advertise<sensor_msgs::PointCloud2> ("velodyne_points", 1); //must be "velodyne_points" for blam_slam node
+//    stsub_ = n.subscribe<std_msgs::Time>("start_time", 1, startCallback);
+//    etsub_ = n.subscribe<std_msgs::Time>("end_time", 1, endCallback);
 
     // Create the service client for calling the assembler
-    client_ = n_.serviceClient<AssembleScans2>("assemble_scans2");
-
-    last_time = ros::Time(0,0);
-
-    pubNum = 0;
+    client = n.serviceClient<AssembleScans2>("assemble_scans2");
   }
 
-  void serviceTimer()
-  {
-    if(rotNum != pubNum)
-    {
-      // Populate our service request based on our timer callback times
-      AssembleScans2 srv;
-      srv.request.begin = last_time;
-      srv.request.end   = ros::Time::now();
-
-      // Make the service call
-      if (client_.call(srv))
-      {
-        pub_.publish(srv.response.cloud);
-        pubNum++;
-        last_time = ros::Time::now();
-       }
-     }
-   }
-
 private:
-  ros::NodeHandle n_;
-  ros::Publisher pub_;
-  ros::Subscriber sub_;
-  ros::ServiceClient client_;
-  ros::Time last_time;
-  uint16_t pubNum;
-
+//  ros::Subscriber stsub_;
+//  ros::Subscriber etsub_;
 };
+
 }
 
 using namespace laser_assembler ;
@@ -74,8 +58,25 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "periodic_snapshotter");
   ros::NodeHandle n;
+  ros::Subscriber sub1 = n.subscribe("start_time", 1, startCallback);
+  ros::Subscriber sub2 = n.subscribe("end_time", 1, endCallback);
   ros::service::waitForService("build_cloud");
   PeriodicSnapshotter snapshotter;
+  while(ros::ok())
+  {
+    // Populate our service request based on our timer callback times
+    AssembleScans2 srv;
+    srv.request.begin = start_time;
+    srv.request.end = end_time;
+
+    // Make the service call
+    if (snapshotter.client.call(srv))
+    {
+      snapshotter.pub.publish(srv.response.cloud);
+    }
+
+    ros::spin();
+  }
   ros::spin();
   return 0;
 }

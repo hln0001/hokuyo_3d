@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
+//#include <stdlib.h>
+//#include <stdio.h>
 
 #include "dynamixel_sdk.h"
 
@@ -7,6 +7,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/UInt16.h>
+#include <std_msgs/Time.h>
 
 //Spins the dynamixel and publishes the raw position value (0-->2048)
 
@@ -29,13 +30,18 @@
 #define TORQUE_DISABLE                  0                   // Value for disabling the torque
 #define VELOCITY_CTRL_MODE              1                   // Value to set drive mode to wheel mode
 
+std_msgs::Time start_time;
+std_msgs::Time end_time;
 
 class Dynamixel {
 private:
   ros::Publisher pub_pos; //position
   ros::Publisher pub_rot; //rotation
+  ros::Publisher stpub;   //start time
+  ros::Publisher etpub;   //end time
 public:
   Dynamixel();
+  void timePub();
   ros::NodeHandle node;
   void positionPub(uint16_t dxl_present_position, uint16_t rotation_count);
 };
@@ -46,6 +52,9 @@ Dynamixel::Dynamixel()
 	//create publisher for motor commands
   pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
   pub_rot = node.advertise<std_msgs::UInt16>("rotation_count", 10);
+  stpub = node.advertise<std_msgs::Time>("start_time", 1);
+  etpub = node.advertise<std_msgs::Time>("end_time", 1);
+  end_time.data = ros::Time::now();
 };
 
 
@@ -58,6 +67,13 @@ void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_cou
   rotmsg.data = rotation_count;
   pub_pos.publish(msg);
   pub_rot.publish(rotmsg);
+}
+
+void Dynamixel::timePub() {
+    start_time.data = end_time.data;
+    end_time.data = ros::Time::now();
+    stpub.publish(start_time);
+    etpub.publish(end_time);
 }
 
 int main(int argc, char **argv)
@@ -110,6 +126,7 @@ int main(int argc, char **argv)
 	  {
 	      rotation_count++;
 	      last_rotation = rotation_number;
+	      motor.timePub();
 	  }
 	  dxl_present_position -= (rotation_number*4096);
 	}
