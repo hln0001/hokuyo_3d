@@ -1,6 +1,3 @@
-//#include <stdlib.h>
-//#include <stdio.h>
-
 #include "dynamixel_sdk.h"
 
 #include <ros/ros.h>
@@ -9,7 +6,7 @@
 #include <std_msgs/UInt16.h>
 #include <std_msgs/Time.h>
 
-//Spins the dynamixel and publishes the raw position value (0-->2048)
+//Spins the dynamixel and publishes the raw position value (0-->2048) as well as the start and end times of each rotation
 
 // Control table address
 #define ADDR_MX_TORQUE_ENABLE           64                  // Control table address is different in Dynamixel model

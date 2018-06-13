@@ -38,16 +38,14 @@ public:
   {
     // Create a publisher for the clouds that we assemble
     pub = n.advertise<sensor_msgs::PointCloud2> ("velodyne_points", 1); //must be "velodyne_points" for blam_slam node
-//    stsub_ = n.subscribe<std_msgs::Time>("start_time", 1, startCallback);
-//    etsub_ = n.subscribe<std_msgs::Time>("end_time", 1, endCallback);
+
 
     // Create the service client for calling the assembler
     client = n.serviceClient<AssembleScans2>("assemble_scans2");
   }
 
 private:
-//  ros::Subscriber stsub_;
-//  ros::Subscriber etsub_;
+
 };
 
 }
@@ -75,8 +73,7 @@ int main(int argc, char **argv)
       snapshotter.pub.publish(srv.response.cloud);
     }
 
-    ros::spin();
+    ros::spinOnce();
   }
-  ros::spin();
   return 0;
 }
