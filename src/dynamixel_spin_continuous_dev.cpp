@@ -34,13 +34,14 @@ class Dynamixel {
 private:
   ros::Publisher pub_pos; //position
   ros::Publisher pub_rot; //rotation
+  ros::Publisher pub_half;
   ros::Publisher stpub;   //start time
   ros::Publisher etpub;   //end time
 public:
   Dynamixel();
   void timePub();
   ros::NodeHandle node;
-  void positionPub(uint16_t dxl_present_position, uint16_t rotation_count);
+  void positionPub(uint16_t dxl_present_position, uint16_t rotation_count, uint16_t half_count);
 };
 
 //Dynamixel class constructor creates publishers
@@ -49,6 +50,7 @@ Dynamixel::Dynamixel()
 	//create publisher for motor commands
   pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
   pub_rot = node.advertise<std_msgs::UInt16>("rotation_count", 10);
+  pub_half = node.advertise<std_msgs::UInt16>("half_rotation_count", 10);
   stpub = node.advertise<std_msgs::Time>("start_time", 1);
   etpub = node.advertise<std_msgs::Time>("end_time", 1);
   end_time.data = ros::Time::now();
@@ -56,14 +58,17 @@ Dynamixel::Dynamixel()
 
 
 //Publishes raw position value to ROS
-void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_count)
+void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_count, uint16_t half_count)
 {
   std_msgs::UInt16 msg;
   std_msgs::UInt16 rotmsg;
+  std_msgs::UInt16 halfmsg;
   msg.data = dxl_present_position;
   rotmsg.data = rotation_count;
+  halfmsg.data = half_count;
   pub_pos.publish(msg);
   pub_rot.publish(rotmsg);
+  pub_half.publish(halfmsg);
 }
 
 void Dynamixel::timePub() {
@@ -124,6 +129,7 @@ int main(int argc, char **argv)
 	  {
 	      rotation_count++;
 	      last_rotation = rotation_number;
+        ROS_INFO("full");
 	      motor.timePub();
 	  }
 	  dxl_present_position -= (rotation_number*4096);
@@ -131,6 +137,7 @@ int main(int argc, char **argv)
 
   if(dxl_present_position > 2048 && half_count == rotation_count){
     half_count++;
+    ROS_INFO("half");
     motor.timePub();
   }
 
