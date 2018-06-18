@@ -3,7 +3,7 @@
   <param
     name="goal_speed"
     type="int"
-    value="100"
+    value="262"
     />
 
   <node
