@@ -126,7 +126,6 @@ int main(int argc, char **argv)
 	      rotation_count++;
         half_count = 0;
 	      last_rotation = rotation_number;
-        ROS_INFO("full");
 	      motor.timePub();
 	  }
 	  dxl_present_position -= (rotation_number*4096);
@@ -134,7 +133,6 @@ int main(int argc, char **argv)
 
   if(dxl_present_position > 2048 && half_count == 0){
     half_count = 1;
-    ROS_INFO("half");
     motor.timePub();
   }
 

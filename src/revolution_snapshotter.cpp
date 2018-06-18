@@ -64,6 +64,11 @@ int main(int argc, char **argv)
   {
     // Populate our service request based on our timer callback times
     AssembleScans2 srv;
+
+    if(srv.request.begin == start_time)
+    {
+      return 0;
+    }
     srv.request.begin = start_time;
     srv.request.end = end_time;
 
