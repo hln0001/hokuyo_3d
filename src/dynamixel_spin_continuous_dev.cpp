@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 	  if (last_rotation != rotation_number)
 	  {
 	      rotation_count++;
-        half_count = 0;
+              half_count = 0;
 	      last_rotation = rotation_number;
 	      motor.timePub();
 	  }
