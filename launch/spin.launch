@@ -3,7 +3,7 @@
   <param
     name="goal_speed"
     type="int"
-    value="262"
+    value="116"
     />
 
   <node
@@ -19,9 +19,9 @@
   </node>
 
   <node
-  	name="dynamixel_spin_continuous_dev"
+  	name="dynamixel_spin_oscillation"
   	pkg="hokuyo_3d"
-  	type="dynamixel_spin_continuous_dev"
+  	type="dynamixel_spin_oscillation"
   	required="true"
   	output="screen"
   />
@@ -51,7 +51,7 @@
     >
     <param
       name="filter_threshold"
-      value="0.665"
+      value="0.2"
     />
   </node>
 

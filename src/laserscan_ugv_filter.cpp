@@ -27,10 +27,10 @@ void filter(const sensor_msgs::LaserScan old_scan){
 //  new_scan.intensities = old_scan.intensities;
 
   //defines ranges array length to 920
-  new_scan.ranges.resize(920);
-  new_scan.intensities.resize(920);
+  new_scan.ranges.resize(1081);
+  new_scan.intensities.resize(1081);
   //check each range for <0.5m and remove those that aren't
-  for(int i = 0; i < 921; i++){
+  for(int i = 0; i < 1082; i++){
     if (old_scan.ranges[i] > ugv_threshold){
       new_scan.ranges[i] = old_scan.ranges[i]; //transfer original range if valid
        new_scan.intensities[i] = old_scan.intensities[i]; //also transfer intensity data

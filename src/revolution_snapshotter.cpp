@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     // Populate our service request based on our timer callback times
     if(fabs(last_start.toSec() - start_time.toSec())  > 0.25)
     {
-      srv.request.begin = start_time - ros::Duration(0.5);
+      srv.request.begin = start_time - ros::Duration(1.0);
       srv.request.end = end_time;
       last_start = start_time;
       
