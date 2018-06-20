@@ -110,9 +110,9 @@ int main(int argc, char **argv)
   dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
 
   //Set position to 0
-  dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_POSITION, 0, &dxl_error);
+  dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_POSITION, 512+135, &dxl_error);
 
-  ros::Duration(5).sleep();
+  ros::Duration(1).sleep();
 
   // Disable Dynamixel Torque
   dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL_ID, ADDR_MX_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
@@ -131,13 +131,13 @@ int main(int argc, char **argv)
       // Read present position
       dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
 
-      if(dxl_present_position > 3072 && dxl_present_position <4096 && dxl_goal_velocity > 0)
+      if(dxl_present_position > 3584+135 && dxl_goal_velocity > 0)
       {
         dxl_goal_velocity = -dxl_goal_velocity;
         motor.timePub();
         dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, DXL_ID, ADDR_MX_GOAL_VELOCITY, dxl_goal_velocity, &dxl_error);
       }
-      else if( (dxl_present_position == 0 || dxl_present_position > 50000) && dxl_goal_velocity < 0)
+      else if( dxl_present_position < 512+135 && dxl_goal_velocity < 0)
       {
         dxl_goal_velocity = -dxl_goal_velocity;
         motor.timePub();

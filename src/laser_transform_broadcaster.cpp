@@ -39,15 +39,15 @@ void obtainValues(const std_msgs::UInt16 &msg)
     transformStamped.child_frame_id = "laser";
     tf2::Quaternion q;
 
-
+//0.207087
     //perform transforms
-    q.setRPY(pos_rad, 3.1416/4, 0);
+    q.setRPY(0, 3*3.14159/2, pos_rad-0.207087);
     transformStamped.transform.rotation.x = q.x();
     transformStamped.transform.rotation.y = q.y();
     transformStamped.transform.rotation.z = q.z();
     transformStamped.transform.rotation.w = q.w();
 
-    sq.setRPY(0,0,0);
+    sq.setRPY(0, 3*3.14159/2, 0);
     v.setValue(0.323, 0, 0.665, 0);
     staticTransformStamped.transform.translation.x = v.x();
     staticTransformStamped.transform.translation.y = v.y();
