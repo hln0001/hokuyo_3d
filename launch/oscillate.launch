@@ -19,9 +19,9 @@
   </node>
 
   <node
-  	name="dynamixel_spin_continuous"
+  	name="dynamixel_spin_oscillation"
   	pkg="hokuyo_3d"
-  	type="dynamixel_spin_continuous"
+  	type="dynamixel_spin_oscillation"
   	required="true"
   	output="screen"
   />

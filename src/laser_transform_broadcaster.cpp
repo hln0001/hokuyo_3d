@@ -41,14 +41,16 @@ void obtainValues(const std_msgs::UInt16 &msg)
 
 //0.207087
     //perform transforms
-    q.setRPY(0, 3*3.14159/2, pos_rad-0.207087);
+    //q.setRPY(pos_rad-0.207087+3.14159, 0, 0);  //forward facing, nodding 180deg
+    q.setRPY(0, 3 * 3.14159 / 2, pos_rad - 0.207087 - 3.14159/2);  //facing up, full rotation
     transformStamped.transform.rotation.x = q.x();
     transformStamped.transform.rotation.y = q.y();
     transformStamped.transform.rotation.z = q.z();
     transformStamped.transform.rotation.w = q.w();
 
-    sq.setRPY(0, 3*3.14159/2, 0);
-    v.setValue(0.323, 0, 0.665, 0);
+    //sq.setRPY(0, 0, 3.14159);  //forward facing, nodding 180deg
+    sq.setRPY(0, 0, 0);  //facing up, full rotation
+    v.setValue(-0.381, 0, 0.6604, 0);
     staticTransformStamped.transform.translation.x = v.x();
     staticTransformStamped.transform.translation.y = v.y();
     staticTransformStamped.transform.translation.z = v.z();

@@ -52,9 +52,6 @@ target_link_libraries(revolution_snapshotter ${catkin_LIBRARIES})
 add_executable(dynamixel_spin_oscillation src/dynamixel_spin_oscillation.cpp)
 target_link_libraries(dynamixel_spin_oscillation ${catkin_LIBRARIES})
 
-add_executable(dynamixel_spin_continuous_dev src/dynamixel_spin_continuous_dev.cpp)
-target_link_libraries(dynamixel_spin_continuous_dev ${catkin_LIBRARIES})
-
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

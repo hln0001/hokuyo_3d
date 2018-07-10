@@ -20,7 +20,7 @@
 // Default settings
 #define DXL_ID                          1                   // Dynamixel ID: 1
 #define BAUDRATE                        57600
-#define DEVICENAME                      "/dev/ttyUSB1"      // Check which port is being used on your controller
+#define DEVICENAME                      "/dev/serial/by-path/pci-0000:00:14.0-usb-0:3.4:1.0-port0"      // Check which port is being used on your controller
 															// ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 // Packet values for control
 #define TORQUE_ENABLE                   1                   // Value for enabling the torque
@@ -66,7 +66,8 @@ void Dynamixel::positionPub(uint16_t dxl_present_position, uint16_t rotation_cou
   pub_rot.publish(rotmsg);
 }
 
-void Dynamixel::timePub() {
+void Dynamixel::timePub()
+{
     start_time.data = end_time.data;
     end_time.data = ros::Time::now();
     stpub.publish(start_time);
@@ -92,6 +93,7 @@ int main(int argc, char **argv)
   uint16_t rotation_number;                   // Rotation number 0-15
   uint16_t last_rotation;                     // Adjusted rotation count, accounting for rollover
   uint16_t rotation_count;                    // overall count
+  uint16_t half_count;                        // count of half rotations
 
   // Open port
   portHandler->openPort();
@@ -122,11 +124,17 @@ int main(int argc, char **argv)
 	  if (last_rotation != rotation_number)
 	  {
 	      rotation_count++;
+              half_count = 0;
 	      last_rotation = rotation_number;
 	      motor.timePub();
 	  }
 	  dxl_present_position -= (rotation_number*4096);
 	}
+
+  if(dxl_present_position > 2048 && half_count == 0){
+    half_count = 1;
+    motor.timePub();
+  }
 
 	motor.positionPub(dxl_present_position, rotation_count);
 
