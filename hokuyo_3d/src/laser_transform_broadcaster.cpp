@@ -49,7 +49,8 @@ void obtainValues(const std_msgs::UInt16 &msg)
     transformStamped.transform.rotation.w = q.w();
 
     //sq.setRPY(0, 0, 3.14159);  //forward facing, nodding 180deg
-    sq.setRPY(0, 0, 0);  //facing up, full rotation
+    //sq.setRPY(0, 0, 0);  //facing up, full rotation
+    sq.setRPY(0, 3.14159/4, 0);  //facing up, 45deg mount angle forward.
     v.setValue(-0.381, 0, 0.6604, 0);
     staticTransformStamped.transform.translation.x = v.x();
     staticTransformStamped.transform.translation.y = v.y();

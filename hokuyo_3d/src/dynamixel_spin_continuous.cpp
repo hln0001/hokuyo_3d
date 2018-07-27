@@ -5,6 +5,7 @@
 #include <std_msgs/Float64.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/Time.h>
+#include <hokuyo_msgs/ServiceTimes.h>
 
 //Spins the dynamixel and publishes the raw position value (0-->2048) as well as the start and end times of each rotation
 
@@ -29,13 +30,14 @@
 
 std_msgs::Time start_time;
 std_msgs::Time end_time;
+hokuyo_msgs::ServiceTimes service_times;
+
 
 class Dynamixel {
 private:
   ros::Publisher pub_pos; //position
   ros::Publisher pub_rot; //rotation
-  ros::Publisher stpub;   //start time
-  ros::Publisher etpub;   //end time
+  ros::Publisher pub_time;   //time
 public:
   Dynamixel();
   void timePub();
@@ -49,8 +51,7 @@ Dynamixel::Dynamixel()
 	//create publisher for motor commands
   pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
   pub_rot = node.advertise<std_msgs::UInt16>("rotation_count", 10);
-  stpub = node.advertise<std_msgs::Time>("start_time", 1);
-  etpub = node.advertise<std_msgs::Time>("end_time", 1);
+  pub_time = node.advertise<hokuyo_msgs::ServiceTimes>("service_times", 1);
   end_time.data = ros::Time::now();
 };
 
@@ -70,8 +71,9 @@ void Dynamixel::timePub()
 {
     start_time.data = end_time.data;
     end_time.data = ros::Time::now();
-    stpub.publish(start_time);
-    etpub.publish(end_time);
+    service_times.start_time = start_time;
+    service_times.end_time = end_time;
+    pub_time.publish(service_times);
 }
 
 int main(int argc, char **argv)

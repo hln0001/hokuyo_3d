@@ -8,19 +8,17 @@
 #include "std_msgs/UInt16.h"
 #include "std_msgs/Time.h"
 #include <math.h>
+#include <hokuyo_msgs/ServiceTimes.h>
 
 ros::Time start_time;
 ros::Time end_time;
+hokuyo_msgs::ServiceTimes service_times;
 
 
-void startCallback(const std_msgs::Time &msg)
+void timesCallback(const hokuyo_msgs::ServiceTimes &msg)
 {
-  start_time = msg.data;
-}
-
-void endCallback(const std_msgs::Time &msg)
-{
-  end_time = msg.data;
+  start_time = msg.start_time.data;
+  end_time = msg.end_time.data;
 }
 
 namespace laser_assembler
@@ -60,12 +58,12 @@ int main(int argc, char **argv)
   int dxl_goal_velocity;
   ros::init(argc, argv, "periodic_snapshotter");
   ros::NodeHandle n;
-  ros::Subscriber sub1 = n.subscribe("start_time", 1, startCallback);
-  ros::Subscriber sub2 = n.subscribe("end_time", 1, endCallback);
+  ros::Subscriber sub1 = n.subscribe("service_times", 1, timesCallback);
   ros::service::waitForService("build_cloud");
   PeriodicSnapshotter snapshotter;
   n.param("goal_speed", dxl_goal_velocity, 131);
-  
+
+/*  
   if (dxl_goal_velocity != 0)
   {
     buffer_duration = 1/((double)dxl_goal_velocity/131); //131 ~= 1hz
@@ -75,29 +73,29 @@ int main(int argc, char **argv)
   {
     buffer_duration = 2;
   }
+*/
   
   ros::Time last_start;
   AssembleScans2 srv;
   while(ros::ok())
   {
+    ros::spinOnce();
 
     // Populate our service request based on our timer callback times
     if(fabs(last_start.toSec() - start_time.toSec())  > 0.25)
     {
-      srv.request.begin = start_time - ros::Duration(buffer_duration);
+      //srv.request.begin = start_time - ros::Duration(buffer_duration);
+      srv.request.begin = start_time;
       srv.request.end = end_time;
       last_start = start_time;
-      
       // Make the service call
       if (snapshotter.client.call(srv))
       {
-	//ROS_INFO("Time difference: %f %f %f", fabs(srv.request.begin.toSec() - start_time.toSec()), srv.request.begin.toSec(), start_time.toSec());
+	ROS_INFO("Time difference: %f start: %f end: %f", fabs(end_time.toSec() - start_time.toSec()), start_time.toSec(), end_time.toSec());
         snapshotter.pub.publish(srv.response.cloud);
       }      
 
     }
-
-    ros::spinOnce();
   }
   return 0;
 }

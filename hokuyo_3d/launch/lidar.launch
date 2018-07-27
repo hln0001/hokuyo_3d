@@ -1,0 +1,24 @@
+<launch>
+    <!-- velodyne -->
+    <include file = "/home/badger/badger_ws/src/velodyne/velodyne_pointcloud/launch/VLP16_points.launch"/>
+    
+    <!-- Spinning Hokuyo -->
+    <include file = "/home/badger/badger_ws/src/hokuyo_3d/launch/spin.launch"/>
+
+    <!--PointCloud Topic Merger-->
+    <node
+        pkg="hokuyo_3d"
+        type="pointcloud_topic_merger"
+        name="pointcloud_topic_merger"
+        output="screen"
+        />
+<!--
+    <node 
+	pkg="rosbag" 
+	type="record" 
+	name="rosbag_record_LIDAR"
+        args="record -o /home/badger/ /tf /tf_static /velodyne_points /hokuyo_points"
+        output="screen"
+	/>
+ -->      
+</launch>

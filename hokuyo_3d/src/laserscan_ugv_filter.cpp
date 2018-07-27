@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
   node.param("filter_threshold", ugv_threshold, 1.3); //accept param for ugv_threshold, default 1.3m
 
   //create publisher and subscribers
-  ros::Subscriber sub = node.subscribe<sensor_msgs::LaserScan>("scan", 1, filter);
+  ros::Subscriber sub = node.subscribe<sensor_msgs::LaserScan>("hokuyo_scan", 1, filter);
   pub = node.advertise<sensor_msgs::LaserScan>("filtered_scan", 1);
 
   ros::spin();

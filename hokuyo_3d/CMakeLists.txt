@@ -14,11 +14,19 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   urg_node
   dynamixel_sdk
+  hokuyo_msgs
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES dynamixel_sdk
+
+  CATKIN_DEPENDS message_runtime
 #  CATKIN_DEPENDS roscpp rospy std_msgs tf2 urg_node
 #  DEPENDS system_lib
 )
@@ -51,6 +59,9 @@ target_link_libraries(revolution_snapshotter ${catkin_LIBRARIES})
 
 add_executable(dynamixel_spin_oscillation src/dynamixel_spin_oscillation.cpp)
 target_link_libraries(dynamixel_spin_oscillation ${catkin_LIBRARIES})
+
+add_executable(pointcloud_topic_merger src/pointcloud_topic_merger.cpp)
+target_link_libraries(pointcloud_topic_merger ${catkin_LIBRARIES})
 
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
