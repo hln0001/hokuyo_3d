@@ -91,7 +91,7 @@ int main(int argc, char **argv)
       // Make the service call
       if (snapshotter.client.call(srv))
       {
-	ROS_INFO("Time difference: %f start: %f end: %f", fabs(end_time.toSec() - start_time.toSec()), start_time.toSec(), end_time.toSec());
+	//ROS_INFO("Time difference: %f start: %f end: %f", fabs(end_time.toSec() - start_time.toSec()), start_time.toSec(), end_time.toSec());
         snapshotter.pub.publish(srv.response.cloud);
       }      
 

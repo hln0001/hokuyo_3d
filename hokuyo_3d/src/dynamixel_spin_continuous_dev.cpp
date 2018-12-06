@@ -5,7 +5,6 @@
 #include <std_msgs/Float64.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/Time.h>
-#include <hokuyo_msgs/ServiceTimes.h>
 
 //Spins the dynamixel and publishes the raw position value (0-->2048) as well as the start and end times of each rotation
 
@@ -21,22 +20,22 @@
 // Default settings
 #define DXL_ID                          1                   // Dynamixel ID: 1
 #define BAUDRATE                        57600
-#define DEVICENAME                      "/dev/serial/by-path/pci-0000:00:14.0-usb-0:3.2:1.0-port0"
-															
+#define DEVICENAME                      "/dev/ttyUSB1"      // Check which port is being used on your controller
+															// ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+// Packet values for control
 #define TORQUE_ENABLE                   1                   // Value for enabling the torque
 #define TORQUE_DISABLE                  0                   // Value for disabling the torque
 #define VELOCITY_CTRL_MODE              1                   // Value to set drive mode to wheel mode
 
 std_msgs::Time start_time;
 std_msgs::Time end_time;
-hokuyo_msgs::ServiceTimes service_times;
-
 
 class Dynamixel {
 private:
   ros::Publisher pub_pos; //position
   ros::Publisher pub_rot; //rotation
-  ros::Publisher pub_time;   //time
+  ros::Publisher stpub;   //start time
+  ros::Publisher etpub;   //end time
 public:
   Dynamixel();
   void timePub();
@@ -50,7 +49,8 @@ Dynamixel::Dynamixel()
 	//create publisher for motor commands
   pub_pos = node.advertise<std_msgs::UInt16>("dxl_pos", 10);
   pub_rot = node.advertise<std_msgs::UInt16>("rotation_count", 10);
-  pub_time = node.advertise<hokuyo_msgs::ServiceTimes>("service_times", 1);
+  stpub = node.advertise<std_msgs::Time>("start_time", 1);
+  etpub = node.advertise<std_msgs::Time>("end_time", 1);
   end_time.data = ros::Time::now();
 };
 
@@ -70,14 +70,13 @@ void Dynamixel::timePub()
 {
     start_time.data = end_time.data;
     end_time.data = ros::Time::now();
-    service_times.start_time = start_time;
-    service_times.end_time = end_time;
-    pub_time.publish(service_times);
+    stpub.publish(start_time);
+    etpub.publish(end_time);
 }
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "spin");
+  ros::init(argc, argv, "spin_test");
   Dynamixel motor;
 
   dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
